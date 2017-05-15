@@ -13,4 +13,11 @@ include_once 'includes/page.header.inc.php';
         </section>
     </main>
 <?
+
+//javascript loader example
+//$_javascript_load[]="/js/jquery-ui.min.js";
+//$_javascript_load[]="/js/jquery.iframe-transport.js";
+//$_javascript_load[]="/js/jquery.fileupload.js";
+//$_page_javascript="alert('hello!');";
+
 include_once 'includes/footer.inc.php';
