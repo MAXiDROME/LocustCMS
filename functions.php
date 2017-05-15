@@ -587,3 +587,24 @@ function getcurrencyrates(){
         ${@$currencyrates[$i]["id"]}=@$currencyrates[$i]["Rate"];
     }
 }
+
+function parse_blocks(&$text){
+    global $mysql;
+
+    $query=@mysqli_query($mysql,"select * from `blocks` where 1");
+    while($row=@mysqli_fetch_assoc($query)){
+        $text=str_replace("###".@$row["name"]."###",@$row["content"],$text);
+    }
+
+}
+
+function pagenotfound(){
+    global $mysql,$_page,$_config,$mPageUrl,$meta_description,$meta_keywords,$meta_title;
+    header("HTTP/1.0 404 Not Found");
+    $query=@mysqli_query($mysql, "select *, substring('$mPageUrl' from length(`rewrite`)+1) `trail` from `pages` where `id`='1'");
+    $_page=@mysqli_fetch_assoc($query);
+
+    $meta_title=$_page["meta_title"]!='' ? $_page["meta_title"] : $_page["title"];
+    $meta_description=$_page["meta_description"]!='' ? $_page["meta_description"] : $_config["meta_description"];
+    $meta_keywords=$_page["meta_keywords"]!='' ? $_page["meta_keywords"] : $_config["meta_keywords"];
+}

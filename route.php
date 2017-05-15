@@ -43,6 +43,9 @@ if ($_page["template"]=='news') {//если новости
             $meta_title=$_item["meta_title"]!='' ? $_item["meta_title"] : $meta_title;
             $meta_description=$_item["meta_description"]!='' ? $_item["meta_description"] : $meta_description;
             $meta_keywords=$_item["meta_keywords"]!='' ? $_item["meta_keywords"] : $meta_keywords;
+
+            parse_blocks($_item["content"]);
+
         } else {
             pagenotfound();
         }
@@ -52,13 +55,4 @@ if ($_page["template"]=='news') {//если новости
 //$pagesarr - массив id текущей страницы и ее родителей
 parent_tree($_page["id"]);
 
-function pagenotfound(){
-    global $mysql,$_page,$_config,$mPageUrl,$meta_description,$meta_keywords,$meta_title;
-    header("HTTP/1.0 404 Not Found");
-    $query=@mysqli_query($mysql, "select *, substring('$mPageUrl' from length(`rewrite`)+1) `trail` from `pages` where `id`='1'");
-    $_page=@mysqli_fetch_assoc($query);
-
-    $meta_title=$_page["meta_title"]!='' ? $_page["meta_title"] : $_page["title"];
-    $meta_description=$_page["meta_description"]!='' ? $_page["meta_description"] : $_config["meta_description"];
-    $meta_keywords=$_page["meta_keywords"]!='' ? $_page["meta_keywords"] : $_config["meta_keywords"];
-}
+parse_blocks($_page["content"]);

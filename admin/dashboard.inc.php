@@ -10,5 +10,11 @@
             <li><a href="?c=carousel">Карусель</a></li>
         </ul>
     </div>
+    <div class="col-xs-12 col-sm-4">
+        <h3>Система</h3>
+        <ul class="list-unstyled">
+            <li><a href="?c=blocks">Блоки</a></li>
+        </ul>
+    </div>
 </div>
 

@@ -75,9 +75,9 @@ if (isset($_POST["edit_banners_and_exit"])) {
     if (!isset($error)) {
 
         if ($_GET["id"]>0) {
-            @mysqli_query($mysql,"update `banners` set `href`='".@$_POST["href"]."',`name`='".$_POST["name"]."',`text1`='".@$_POST["text1"]."',`text2`='".@$_POST["text2"]."',`text1_ru`='".@$_POST["text1_ru"]."',`text2_ru`='".@$_POST["text2_ru"]."',`text1_zh-CN`='".@$_POST["text1_zh-CN"]."',`text2_zh-CN`='".@$_POST["text2_zh-CN"]."' where `id`='".$_GET["id"]."'");
+            @mysqli_query($mysql,"update `banners` set `href`='".@$_POST["href"]."',`name`='".$_POST["name"]."',`text1`='".@$_POST["text1"]."',`text2`='".@$_POST["text2"]."' where `id`='".$_GET["id"]."'");
         } else {//новая страница
-            @mysqli_query($mysql, "insert into `banners` (`href`,`name`,`text1`,`text2`,`text1_ru`,`text2_ru`,`text1_zh-CN`,`text2_zh-CN`,`order`) values ('".$_POST["href"]."','" . $_POST["name"] . "','".@$_POST["text1"]."','".@$_POST["text2"]."','".@$_POST["text1_ru"]."','".@$_POST["text2_ru"]."','".@$_POST["text1_zh-CN"]."','".@$_POST["text2_zh-CN"]."','9999')");
+            @mysqli_query($mysql, "insert into `banners` (`href`,`name`,`text1`,`text2`,`order`) values ('".$_POST["href"]."','" . $_POST["name"] . "','".@$_POST["text1"]."','".@$_POST["text2"]."','9999')");
             $_GET["id"]=@mysqli_insert_id($mysql);
             repair_banners_order();
         }
