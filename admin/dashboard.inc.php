@@ -14,6 +14,8 @@
         <h3>Система</h3>
         <ul class="list-unstyled">
             <li><a href="?c=blocks">Блоки</a></li>
+            <li><a href="?c=email">Шаблон писем</a></li>
+            <li><a href="?c=svg">Редактор svg-иконок</a></li>
         </ul>
     </div>
 </div>

@@ -94,11 +94,17 @@ if (isset($_GET["logout"])) {
                         </li>
                     </ul>
                     <ul class="nav navbar-nav">
-                        <li class="dropdown<? if ($c=="blocks") echo " active"; ?>">
+                        <li class="dropdown<? if ($c=="blocks" || $c=="email" || $c=="svg") echo " active"; ?>">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Система <b class="caret"></b> </a>
                             <ul class="dropdown-menu">
                                 <li class="<? if ($c=="blocks") echo "active"; ?>">
                                     <a href="./?c=blocks">Блоки</a>
+                                </li>
+                                <li class="<? if ($c=="email") echo "active"; ?>">
+                                    <a href="./?c=email">Шаблон писем</a>
+                                </li>
+                                <li class="<? if ($c=="svg") echo "active"; ?>">
+                                    <a href="./?c=svg">Редактор svg-иконок</a>
                                 </li>
                             </ul>
                         </li>
