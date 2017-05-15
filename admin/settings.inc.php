@@ -24,7 +24,8 @@ if(isset($_POST["save_settings"])){
                                                     `counters`='".@$_POST["counters"]."',
                                                     `meta_title`='".@$_POST["meta_title"]."',
                                                     `meta_keywords`='".@$_POST["meta_keywords"]."',
-                                                    `meta_description`='".@$_POST["meta_description"]."'
+                                                    `meta_description`='".@$_POST["meta_description"]."',
+                                                    `maintenance`='".@$_POST["maintenance"]."'
                                               where `id`='".$_config["id"]."'");
 
 
