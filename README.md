@@ -1,0 +1,2 @@
+# LocustCMS
+LocustCMS initial setup
