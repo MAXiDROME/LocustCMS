@@ -7,6 +7,7 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_news") {//удаляем 
     $row=@mysqli_fetch_assoc($query);
     if($row["filename"]!='')unlink("..".$newspath.@$row["filename"]);
     @mysqli_query($mysql, "delete from `news` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
     //удалили страницу
@@ -21,21 +22,25 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_photo") {//удаляем
 }
 if (isset($_GET["action"]) && $_GET["action"]=="published") {
     @mysqli_query($mysql, "update `news` set `published`='1' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="draft") {
     @mysqli_query($mysql, "update `news` set `published`='0' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="show") {
     @mysqli_query($mysql, "update `news` set `visible`='1' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="hide") {
     @mysqli_query($mysql, "update `news` set `visible`='0' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
@@ -107,7 +112,6 @@ if (isset($_POST["edit_news_and_exit"])) {
             @mysqli_query($mysql, "update `news` set `rewrite`='" . $_POST["rewrite"] . "' where `id`='" . $_GET["id"] . "'");
 
         //загрузка картинки
-        /* todo: сделать загрузку картинок */
         if(isset($_FILES["photofile"]) && $_FILES["photofile"]["size"]>0){
             $query=@mysqli_query($mysql,"select * from `news` where `id`='".$_GET["id"]."'");
             $row=@mysqli_fetch_assoc($query);
@@ -119,6 +123,7 @@ if (isset($_POST["edit_news_and_exit"])) {
         }
         //загрузили картинку
 
+        sitemap();
         $pid=$_GET["pid"];
         unset($_POST);
         unset($_GET);

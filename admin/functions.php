@@ -136,3 +136,39 @@ function makethumb($src,$dst,$w=400,$h=300,$q=100,$crop=1,$bg='#FFFFFF'){
 
 }
 //конец функции makethumb
+
+
+
+
+function sitemap(){
+    global $mysql,$site_url;
+
+    $sitemap[]="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    $sitemap[]="<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">";
+
+    //страницы
+    $query=@mysqli_query($mysql,"select * from `pages` where `visible`='1' and `published`='1' order by `pid` asc, `order` asc");
+    while($row=@mysqli_fetch_assoc($query)){
+        $sitemap[]="<url>";
+        $sitemap[]="<loc>".$site_url.$row["rewrite"]."</loc>";
+        $sitemap[]="<changefreq>monthly</changefreq>";
+        $sitemap[]="<priority>0.5</priority>";
+        $sitemap[]="</url>";
+    }
+
+    //новости
+    $query=@mysqli_query($mysql,"select `news`.*,`pages`.`rewrite` as `catrewrite` from `news` left join `pages` on `pages`.`id`=`news`.`pid` where `pages`.`published`='1' and `news`.`visible`='1' and `news`.`published`='1' order by `news`.`adddate` desc");
+    while($row=@mysqli_fetch_assoc($query)){
+        $sitemap[]="<url>";
+        $sitemap[]="<loc>".$site_url.$row["catrewrite"].$row["rewrite"]."/</loc>";
+        $sitemap[]="<lastmod>".date("Y-m-d",strtotime($row["adddate"]))."</lastmod>";
+        $sitemap[]="<changefreq>daily</changefreq>";
+        $sitemap[]="<priority>0.7</priority>";
+        $sitemap[]="</url>";
+    }
+
+
+    $sitemap[]="</urlset>";
+
+    file_put_contents("../sitemap.xml",implode("\n",$sitemap));
+}

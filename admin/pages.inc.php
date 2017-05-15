@@ -20,27 +20,32 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_page") {//удаляем 
         unset($pid);
 
     }
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
     //удалили страницу
 }
 if (isset($_GET["action"]) && $_GET["action"]=="published") {
     @mysqli_query($mysql, "update `pages` set `published`='1' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="draft") {
     @mysqli_query($mysql, "update `pages` set `published`='0' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="show") {
     @mysqli_query($mysql, "update `pages` set `visible`='1' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
 if (isset($_GET["action"]) && $_GET["action"]=="hide") {
     @mysqli_query($mysql, "update `pages` set `visible`='0' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
@@ -49,14 +54,13 @@ if(isset($_GET["action"]) && $_GET["action"]=="clone_page"){
     $query=@mysqli_query($mysql,"select * from `pages` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
     $row=@mysqli_fetch_assoc($query);
 
-    if(@$row["protected"]!="") {
-
-        $sql="insert into `pages` set";
+    if(@$row["protected"]!="1") {
+        unset($row["id"]);
+        $row["order"]='9999';
+        $sql="insert into `pages` set ";
         foreach ($row as $key=>$val) {
-            if ($key!="id" && $key!="order") $keyarr[]="`" . $key . "`='" . $val . "'";
+            $keyarr[]="`" . $key . "`='" . $val . "'";
         }
-        $keyarr[]="`order`='9999'";
-
 
         $rewrite=@makevalidurl(@$row["title"]);
         $i="";
@@ -78,6 +82,7 @@ if(isset($_GET["action"]) && $_GET["action"]=="clone_page"){
         repairpagesorder(@$row["pid"]);
     }
 
+    sitemap();
     unset($_GET["action"]);
     unset($_GET["id"]);
 }
@@ -169,7 +174,7 @@ if (isset($_POST["edit_page_and_exit"])) {
             @mysqli_query($mysql, "update `pages` set `rewrite`='" . $_POST["rewrite"] . "/' where `id`='" . $_GET["id"] . "'");
 
         }
-
+        sitemap();
         unset($_POST);
         unset($_GET);
     }
