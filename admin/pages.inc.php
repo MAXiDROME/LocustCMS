@@ -384,7 +384,7 @@ function drawpagerow ($row, $haschild=FALSE, $child=FALSE) {
             <a href="./?c=<?=$c?>&amp;action=move-down&amp;id=<?=@$row["id"]?>" title="Ниже"><span class="glyphicon glyphicon-arrow-down"></span></a>
             <?=@$row["title"]?>
         </td>
-        <td>/<?=@$row["rewrite"]?>/<? if(@$row["protected"]==1)echo ' <span class="glyphicon glyphicon-lock text-warning small"></span>';?></td>
+        <td>/<?=@$row["rewrite"]!='/'?@$row["rewrite"]:''?><? if(@$row["protected"]==1)echo ' <span class="glyphicon glyphicon-lock text-warning small"></span>';?></td>
         <td><? if (@$row["published"]==1) {
                 echo "Опубликована";
             } else {
