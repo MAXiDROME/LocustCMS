@@ -6,6 +6,7 @@
 if (isset($_POST["save_svg"])) {
     file_put_contents('../img/icons.svg',($_POST["content"]));
     unset($_POST);
+    admin_log('Изменение файла с SVG-иконками');
 }
 
 if (!isset($_POST["save_svg"])) {

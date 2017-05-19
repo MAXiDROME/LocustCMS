@@ -4,6 +4,9 @@
 <?
 
 if (isset($_GET["action"]) && $_GET["action"]=="delete_user") {
+    $query=@mysqli_query($mysql,"select * from `users` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
+    $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление пользователя "'.$row["email"].'"');
     @mysqli_query($mysql, "DELETE FROM `users` WHERE `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
 
     unset($_GET["action"]);
@@ -27,6 +30,8 @@ if (isset($_POST["edit_user_and_exit"])) {//сохраняем
                                                         `comment`='" . $_POST["comment"] . "',
                                                         `admin_comment`='" . $_POST["admin_comment"] . "'
                                                 WHERE `id`='" . $_GET["id"] . "'");
+
+        admin_log('Изменение пользователя "'.$_POST["email"].'"');
 
         unset($_POST);
         unset($_GET);

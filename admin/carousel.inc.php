@@ -1,5 +1,8 @@
 <?
 if (isset($_GET["action"]) && $_GET["action"]=="delete_carousel") {//удаляем
+    $query=@mysqli_query($mysql,"select * from `carousel` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
+    $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление элемента карусели "'.$row["title"].'"');
     @mysqli_query($mysql, "delete from `carousel` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     repaircarouselorder();
 
@@ -53,6 +56,7 @@ if (isset($_POST["edit_page_and_exit"])) {
                                                       `content`='".$_POST["content"]."',
                                                       `visible`='".$_POST["visible"]."'
                                                   where `id`='".$_GET["id"]."'");
+            admin_log('Изменение элемента карусели "'.$_POST["title"].'"');
 
         } else {//новая страница
             @mysqli_query($mysql,"insert into `carousel` set 
@@ -61,6 +65,7 @@ if (isset($_POST["edit_page_and_exit"])) {
                                                       `content`='".$_POST["content"]."',
                                                       `visible`='".$_POST["visible"]."'
                                                   ");
+            admin_log('Изменение элемента карусели "'.$_POST["title"].'"');
             $_GET["id"]=@mysqli_insert_id($mysql);
             repaircarouselorder();
         }

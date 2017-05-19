@@ -27,6 +27,7 @@ if (isset($_GET["action"]) && $_GET["action"]=="move-down") {
 if (isset($_GET["action"]) && $_GET["action"]=="delete_banners") {//удаляем
     $query=@mysqli_query($mysql, "select * from `banners` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление баннера "'.$row["name"].'"');
     if($row["filename"]!='')unlink("..".$bannerspath.@$row["filename"]);
     @mysqli_query($mysql, "delete from `banners` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     unset($_GET["action"]);
@@ -37,6 +38,7 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_banners") {//удаляе
 if (isset($_GET["action"]) && $_GET["action"]=="delete_photo") {//удаляем фото
     $query=@mysqli_query($mysql, "select * from `banners` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление изображения баннера "'.$row["name"].'"');
     if($row["filename"]!='')unlink("..".$bannerspath.@$row["filename"]);
     @mysqli_query($mysql, "update `banners` set `filename`='' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $_GET["action"]="edit_banners";
@@ -76,8 +78,10 @@ if (isset($_POST["edit_banners_and_exit"])) {
 
         if ($_GET["id"]>0) {
             @mysqli_query($mysql,"update `banners` set `href`='".@$_POST["href"]."',`name`='".$_POST["name"]."',`text1`='".@$_POST["text1"]."',`text2`='".@$_POST["text2"]."' where `id`='".$_GET["id"]."'");
+            admin_log('Изменение баннера "'.$_POST["name"].'"');
         } else {//новая страница
             @mysqli_query($mysql, "insert into `banners` (`href`,`name`,`text1`,`text2`,`order`) values ('".$_POST["href"]."','" . $_POST["name"] . "','".@$_POST["text1"]."','".@$_POST["text2"]."','9999')");
+            admin_log('Добавление баннера "'.$row["name"].'"');
             $_GET["id"]=@mysqli_insert_id($mysql);
             repair_banners_order();
         }
@@ -87,6 +91,7 @@ if (isset($_POST["edit_banners_and_exit"])) {
         if(isset($_FILES["photofile"]) && $_FILES["photofile"]["size"]>0){
             $query=@mysqli_query($mysql,"select * from `banners` where `id`='".$_GET["id"]."'");
             $row=@mysqli_fetch_assoc($query);
+            admin_log('Изменение изображения баннера "'.$row["name"].'"');
             @unlink("..".@$bannerspath.@$row["filename"]);
             $filename=$_GET["id"]."-".makevalidurl($_FILES["photofile"]["name"]);
             move_uploaded_file($_FILES["photofile"]["tmp_name"],"..".$bannerspath.$filename);

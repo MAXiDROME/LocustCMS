@@ -5,6 +5,7 @@
 if (isset($_POST["save_email"])) {
     file_put_contents('../templates/email_template.html',($_POST["content"]));
     unset($_POST);
+    admin_log('Изменение шаблона электронных писем');
 }
 
 if (!isset($_POST["save_email"])) {

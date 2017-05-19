@@ -2,6 +2,8 @@
 
     if (isset($_POST["save_settings"])) {
 
+        admin_log('Изменение системных настроек');
+
         array_walk($_POST, 'makesafesqlstring');
 
         if ($_POST["login"]=="") $error["login"]="Обязательное поле";

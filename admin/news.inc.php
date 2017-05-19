@@ -5,6 +5,8 @@
 if (isset($_GET["action"]) && $_GET["action"]=="delete_news") {//удаляем новость
     $query=@mysqli_query($mysql, "select * from `news` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление новости "'.$row["title"].'"');
+
     if($row["filename"]!='')unlink("..".$newspath.@$row["filename"]);
     @mysqli_query($mysql, "delete from `news` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     sitemap();
@@ -15,6 +17,7 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_news") {//удаляем 
 if (isset($_GET["action"]) && $_GET["action"]=="delete_photo") {//удаляем фото
     $query=@mysqli_query($mysql, "select * from `news` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление фотографии из новости "'.$row["title"].'"');
     if($row["filename"]!='')unlink("..".$newspath.@$row["filename"]);
     @mysqli_query($mysql, "update `news` set `filename`='' where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $_GET["action"]="edit_news";
@@ -80,6 +83,8 @@ if (isset($_POST["edit_news_and_exit"])) {
                                                     `visible`='".$_POST["visible"]."',
                                                     `published`='".$_POST["published"]."' 
                                           where `id`='".$_GET["id"]."'");
+
+            admin_log('Изменение новости "'.$_POST["title"].'"');
         } else {//новая страница
             @mysqli_query($mysql,"insert into `news` set 
                                                     `adddate`='".@date("Y-m-d 00:00:00",@strtotime($_POST["adddate"]))."',
@@ -93,6 +98,8 @@ if (isset($_POST["edit_news_and_exit"])) {
                                                     `visible`='".$_POST["visible"]."',
                                                     `published`='".$_POST["published"]."'");
             $_GET["id"]=@mysqli_insert_id($mysql);
+            admin_log('Добавление новости "'.$_POST["title"].'"');
+
         }
 
             if ($_POST["rewrite"]=="") {
@@ -113,6 +120,7 @@ if (isset($_POST["edit_news_and_exit"])) {
 
         //загрузка картинки
         if(isset($_FILES["photofile"]) && $_FILES["photofile"]["size"]>0){
+            admin_log('Изменение фотографии новости "'.$_POST["title"].'"');
             $query=@mysqli_query($mysql,"select * from `news` where `id`='".$_GET["id"]."'");
             $row=@mysqli_fetch_assoc($query);
             @unlink("..".@$newspath.@$row["filename"]);

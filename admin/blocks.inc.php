@@ -2,6 +2,9 @@
 //блоки
 
 if (isset($_GET["action"]) && $_GET["action"]=="delete") {//удаляем
+    $query=@mysqli_query($mysql,"select * from `blocks` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
+    $row=@mysqli_fetch_assoc($query);
+    admin_log('Удаление блока "'.$row["name"].'"');
     @mysqli_query($mysql, "DELETE FROM `blocks` WHERE `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     unset($_GET["action"]);
     unset($_GET["id"]);
@@ -19,8 +22,10 @@ if (isset($_POST["edit_block_and_exit"])) {
 
         if ($_GET["id"]>0) {
             @mysqli_query($mysql, "UPDATE `blocks` SET `name`='" . $_POST["name"] . "',`comment`='" . @$_POST["comment"] . "',`content`='" . @$_POST["content"] . "' WHERE `id`='" . $_GET["id"] . "'");
+            admin_log('Изменение блока "'.$_POST["name"].'"');
         } else {//новая страница
             @mysqli_query($mysql, "INSERT INTO `blocks` (`name`,`comment`,`content`) VALUES ('" . $_POST["name"] . "','" . @$_POST["comment"] . "','" . @$_POST["content"] . "')");
+            admin_log('Добавление блока "'.$_POST["name"].'"');
             $_GET["id"]=@mysqli_insert_id($mysql);
         }
 

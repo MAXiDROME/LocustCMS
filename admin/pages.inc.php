@@ -3,6 +3,7 @@ if (isset($_GET["action"]) && $_GET["action"]=="delete_page") {//удаляем 
     $query=@mysqli_query($mysql, "select * from `pages` where `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
     $row=@mysqli_fetch_assoc($query);
     $pid=@$row["pid"];
+    admin_log('Удаление страницы "'.$row["title"].'"');
     if ($row["protected"]==0) {
         $query=@mysqli_query($mysql, "select * from `pages` where `pid`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
         while ($row=@mysqli_fetch_assoc($query)) {
@@ -54,8 +55,11 @@ if(isset($_GET["action"]) && $_GET["action"]=="clone_page"){
     $query=@mysqli_query($mysql,"select * from `pages` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
     $row=@mysqli_fetch_assoc($query);
 
+    admin_log('Клонирование страницы "'.$row["title"].'"');
+
     if(@$row["protected"]!="1") {
         unset($row["id"]);
+        unset($row["rewrite"]);
         $row["order"]='9999';
         $sql="insert into `pages` set ";
         foreach ($row as $key=>$val) {
@@ -73,7 +77,7 @@ if(isset($_GET["action"]) && $_GET["action"]=="clone_page"){
                 break;
             }
         }
-        $keyarr[]="`rewrite`='".$rewrite."/'";;
+        $keyarr[]="`rewrite`='".$rewrite.$i."/'";;
 
         $sql.=@join(",", $keyarr);
 
@@ -139,6 +143,9 @@ if (isset($_POST["edit_page_and_exit"])) {
             repairpagesorder($_POST["pid"]);
             repairpagesorder($_POST["oldpid"]);
 
+            admin_log('Изменение страницы "'.$row["title"].'"');
+
+
         } else {//новая страница
             @mysqli_query($mysql,"insert into `pages` set 
                                                       `order`='9999',
@@ -152,6 +159,9 @@ if (isset($_POST["edit_page_and_exit"])) {
                                                       `published`='".$_POST["published"]."'");
             $_GET["id"]=@mysqli_insert_id($mysql);
             repairpagesorder($_POST["pid"]);
+
+            admin_log('Добавление страницы "'.$_POST["title"].'"');
+
         }
 
         if ($_POST["protected"]==0) {

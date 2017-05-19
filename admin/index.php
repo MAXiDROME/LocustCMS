@@ -8,6 +8,9 @@ $c="";
 if (isset($_POST["c"])) $_GET["c"]=$_POST["c"];
 if (isset($_GET["c"])) $c=$_GET["c"];
 
+if(isset($_POST["page"]))$_GET["page"]=$_POST["page"];
+if(isset($_GET["page"]))$page=$_GET["page"];
+
 if (isset($_POST["login"]) && isset($_POST["password"]) && !isset($_SESSION["admin_auth_user"])) {
     $error="";
     $login=mysqli_real_escape_string($mysql, $_POST["login"]);
@@ -27,6 +30,7 @@ if (isset($_POST["login"]) && isset($_POST["password"]) && !isset($_SESSION["adm
             unset($row["role"]);
             $row["role"]=$role;
             $_SESSION["admin_auth_user"]=$row;
+            @mysqli_query($mysql,"update `admin_users` set `lastlogin`=now() where `id`='".$_SESSION["admin_auth_user"]["id"]."'");
         }
     }
 }

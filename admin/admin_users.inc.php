@@ -3,6 +3,11 @@
 
     if (isset($_GET["action"]) && $_GET["action"]=="delete_user") {
         if ($_GET["id"]==1) $_GET["id"]=0;
+
+        $query=@mysqli_query($mysql,"select * from `admin_users` where `id`='".@mysqli_real_escape_string($mysql,$_GET["id"])."'");
+        $row=@mysqli_fetch_assoc($query);
+        admin_log('Удаление пользователя панели управления "'.$row["login"].'"');
+
         @mysqli_query($mysql, "DELETE FROM `admin_users` WHERE `id`='" . @mysqli_real_escape_string($mysql, $_GET["id"]) . "'");
 
         unset($_GET["action"]);
@@ -27,6 +32,7 @@
                                                         `comment`='" . $_POST["comment"] . "',
                                                         `role`='" . json_encode($_POST["role"]) . "'
                                                 ");
+                admin_log('Добавление пользователя панели управления "'.$_POST["login"].'"');
 
             } else {
 
@@ -37,6 +43,7 @@
                                                         `comment`='" . $_POST["comment"] . "',
                                                         `role`='" . json_encode($_POST["role"]) . "'
                                                 WHERE `id`='" . $_GET["id"] . "'");
+                admin_log('Изменение пользователя панели управления "'.$_POST["login"].'"');
             }
             unset($_POST);
             unset($_GET);

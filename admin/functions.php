@@ -190,3 +190,120 @@ function check_user_access($_indexes){
     }
     return false;
 }
+
+//логирование в панели управления
+function admin_log($action){
+    global $mysql;
+
+    @mysqli_query($mysql,"insert into `admin_log` (`user`,`action`) values ('".$_SESSION["admin_auth_user"]["id"]."','".@mysqli_real_escape_string($mysql,$action)."')");
+
+}
+
+
+/**
+ * @param        $allpage   int число страниц
+ * @param        $this_page int текущая страница
+ * @param string $query     string url-строка с тегом {p} в качестве номера страницы
+ * @param int    $flp       int показывать первую и последнюю страницу (1=да)
+ * @param int    $expanded  int расширенная навигация (больше страниц, 1=да)
+ */
+function draw_navigation ($allpage, $this_page, $query="", $flp=1, $expanded=1) {
+    // {p} в $query заменяется на номер страницы, пример index.php?p={p}
+    // $flp - вывод первой и последней страницы
+    // $expanded - расширенная навигация
+    //    $this_page = (isset($_GET['p'])) ? intval($_GET['p']) : 1 ;
+    if ($this_page<1) $this_page=1;
+    if ($this_page>$allpage) $this_page=@$allpage;
+
+    $prev_page=$this_page-1;
+    $pprev_page=$this_page-2;
+    $ppprev_page=$this_page-3;
+    $next_page=$this_page+1;
+    $nnext_page=$this_page+2;
+    $nnnext_page=$this_page+3;
+
+    ?>
+    <!-- Bootstrap Pagination-->
+    <nav>
+        <ul class="pagination pagination">
+            <?
+            // Первая страница
+            if ($pprev_page<=2 || @$allpage==5) {
+                if ($this_page>2 && $flp==1) {
+                    ?>
+                    <li><a href="<?=str_replace('{p}', 1, $query)?>">1</a></li>
+                    <?
+                }
+            } else {
+                if ($this_page>2 && $flp==1) {
+                    ?>
+                    <li><a href="<?=str_replace('{p}', 1, $query)?>">1</a></li>
+                    <li><span style="padding-left:0;padding-right:0;background:transparent;border:none;">...</span></li>
+                    <?
+                }
+            }
+
+            // Пред пред предыдущая страница
+            if ($ppprev_page>1 && $expanded==1 && $allpage==5) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $ppprev_page, $query)?>"><?=$ppprev_page?></a></li>
+                <?
+            }
+            // Пред предыдущая страница
+            if ($pprev_page>1 && $expanded==1) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $pprev_page, $query)?>"><?=$pprev_page?></a></li>
+                <?
+            }
+            // Предыдущая страница
+            if ($prev_page>=1) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $prev_page, $query)?>"><?=$prev_page?></a></li>
+                <?
+            }
+
+            // Наша позиция
+            ?>
+            <li class="active"><span><?=$this_page?></span></li>
+            <?
+            // Следующая страница
+            if ($next_page<=$allpage) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $next_page, $query)?>"><?=$next_page?></a></li>
+                <?
+            }
+            // Следующая за следующей страница
+            if ($nnext_page<$allpage && $expanded==1) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $nnext_page, $query)?>"><?=$nnext_page?></a></li>
+                <?
+            }
+            // Следующая за следующей следующей страница
+            if ($nnnext_page<$allpage && $expanded==1 && $allpage==5) {
+                ?>
+                <li><a href="<?=str_replace('{p}', $nnnext_page, $query)?>"><?=$nnnext_page?></a></li>
+                <?
+            }
+            //Последняя страница
+            if ($nnext_page>=$allpage-1 || @$allpage==5) {
+                if ($this_page<$allpage-1 && $flp==1) {
+                    ?>
+                    <li><a href="<?=str_replace('{p}', $allpage, $query)?>"><?=$allpage?></a></li>
+                    <?
+                }
+            } else {
+                if ($this_page<$allpage-1 && $flp==1) {
+                    ?>
+                    <li><span style="padding-left:0;padding-right:0;background:transparent;border:none;">...</span></li>
+                    <li><a href="<?=str_replace('{p}', $allpage, $query)?>"><?=$allpage?></a></li>
+                    <?
+                }
+            }
+
+            ?>
+        </ul>
+    </nav>
+
+
+    <?
+}

@@ -194,6 +194,15 @@ INSERT INTO `admin_users` (`id`, `login`, `password`, `role`) VALUES
 ALTER TABLE `admin_users` ADD `name` VARCHAR(255) NOT NULL , ADD `comment` TEXT NOT NULL ;
 ALTER TABLE `admin_users` ADD `lastlogin` TIMESTAMP NOT NULL ;
 ALTER TABLE `admin_users` CHANGE `lastlogin` `lastlogin` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';
+
+
+CREATE TABLE IF NOT EXISTS `admin_log` (
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user` int(11) NOT NULL,
+  `action` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 --
 -- Индексы сохранённых таблиц
 --
