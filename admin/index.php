@@ -1,35 +1,40 @@
 <?
 
 include_once '../config.php';
-
+include_once 'config.inc.php';
 include_once 'functions.php';
 
 $c="";
 if (isset($_POST["c"])) $_GET["c"]=$_POST["c"];
 if (isset($_GET["c"])) $c=$_GET["c"];
 
-if (isset($_POST["login"]) && isset($_POST["password"]) && !isset($_SESSION["admin_auth_user_id"])) {
+if (isset($_POST["login"]) && isset($_POST["password"]) && !isset($_SESSION["admin_auth_user"])) {
     $error="";
     $login=mysqli_real_escape_string($mysql, $_POST["login"]);
     $password=mysqli_real_escape_string($mysql, $_POST["password"]);
     if ($login=="") $error.="Не указан логин!<br>";
     if ($password=="") $error.="Не указан пароль!<br>";
-    if ($login!=$_config["login"]) $error.="Неправильный логин!<br>";
-    if ($password!=$_config["password"]) {
-        $error.="Неправильный пароль!<br>";
-    }
 
-    if ($error=="") {
-        $_SESSION["admin_auth_user_id"]=$_config["id"];
+    $query=@mysqli_query($mysql,"select * from `admin_users` where `login`='".$login."'");
+    if(!$row=@mysqli_fetch_assoc($query)){
+        $error.="Неправильный логин!<br>";
+    }else{
+        if ($password!=$row["password"]) {
+            $error.="Неправильный пароль!<br>";
+        }
+        if ($error=="") {
+            $role=@json_decode($row["role"]);
+            unset($row["role"]);
+            $row["role"]=$role;
+            $_SESSION["admin_auth_user"]=$row;
+        }
     }
-
 }
 
 if (isset($_GET["logout"])) {
-    unset($_SESSION["admin_auth_user_id"]);
+    unset($_SESSION["admin_auth_user"]);
     header("Location: .");
 }
-
 
 ?>
 <!doctype html>
@@ -61,7 +66,7 @@ if (isset($_GET["logout"])) {
 </head>
 <body>
     <?
-    if (!isset($_SESSION["admin_auth_user_id"])) {
+    if (!isset($_SESSION["admin_auth_user"])) {
         include_once 'login.inc.php';
     } else {
         ?>
@@ -75,44 +80,47 @@ if (isset($_GET["logout"])) {
                 </div>
                 <div class="collapse navbar-collapse" id="navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li class="dropdown<? if ($c=="pages" || $c=="news" || $c=="banners" || $c=="carousel") echo " active"; ?>">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Сайт <b class="caret"></b> </a>
-                            <ul class="dropdown-menu">
-                                <li class="<? if ($c=="pages") echo "active"; ?>">
-                                    <a href="./?c=pages">Страницы</a>
+                        <?
+                        foreach ($_cms_pages as $_name=>$_cat){
+                            unset($_indexes);
+                            foreach ($_cat as $_index){
+                                $_indexes[]=$_index;
+                            }
+
+                            if(check_user_access($_indexes)) {
+                                ?>
+                                <li class="dropdown<? if (@in_array($c, $_indexes)!==FALSE) echo " active"; ?>">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <?=$_name?>
+                                        <b class="caret"></b> </a>
+                                    <ul class="dropdown-menu">
+                                        <?
+                                        foreach ($_cat as $_page_name=>$_page_index) {
+                                            if (@in_array($_page_index, $_SESSION["admin_auth_user"]["role"])!==FALSE) {
+                                                ?>
+                                                <li class="<? if ($c==$_page_index) echo "active"; ?>">
+                                                    <a href="./?c=<?=$_page_index?>"><?=$_page_name?></a>
+                                                </li>
+                                                <?
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
                                 </li>
-                                <li class="<? if ($c=="news") echo "active"; ?>">
-                                    <a href="./?c=news">Новости</a>
-                                </li>
-                                <li class="<? if ($c=="banners") echo "active"; ?>">
-                                    <a href="./?c=banners">Баннеры</a>
-                                </li>
-                                <li class="<? if ($c=="carousel") echo "active"; ?>">
-                                    <a href="./?c=carousel">Карусель</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        <li class="dropdown<? if ($c=="blocks" || $c=="email" || $c=="svg") echo " active"; ?>">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Система <b class="caret"></b> </a>
-                            <ul class="dropdown-menu">
-                                <li class="<? if ($c=="blocks") echo "active"; ?>">
-                                    <a href="./?c=blocks">Блоки</a>
-                                </li>
-                                <li class="<? if ($c=="email") echo "active"; ?>">
-                                    <a href="./?c=email">Шаблон писем</a>
-                                </li>
-                                <li class="<? if ($c=="svg") echo "active"; ?>">
-                                    <a href="./?c=svg">Редактор svg-иконок</a>
-                                </li>
-                            </ul>
-                        </li>
+                                <?
+                            }
+                        }
+                        ?>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="<? if ($c=="settings") echo "active"; ?>">
-                            <a href="./?c=settings"><span class="glyphicon glyphicon-cog"></span> Настройки</a>
-                        </li>
+                        <?
+                        if($_SESSION["admin_auth_user"]["id"]=='1') {
+                            ?>
+                            <li class="<? if ($c=="settings") echo "active"; ?>">
+                                <a href="./?c=settings"><span class="glyphicon glyphicon-cog"></span> Настройки</a>
+                            </li>
+                            <?
+                        }
+                        ?>
                         <li>
                             <a href="/" target="_blank"><span class="glyphicon glyphicon-new-window"></span> Открыть сайт</a>
                         </li>
@@ -129,7 +137,11 @@ if (isset($_GET["logout"])) {
                 <div class="col-xs-12">
                     <?
                     $template='dashboard.inc.php';
-                    if ($c!="") $template=$c . ".inc.php";
+                    if($c!="") {
+                        if (@in_array($c, $_SESSION["admin_auth_user"]["role"])!==FALSE) {
+                            $template=$c . ".inc.php";
+                        }
+                    }
                     include_once $template;
                     ?>
                     <div class="margin-top-1 margin-bottom-1 hidden-md"></div>

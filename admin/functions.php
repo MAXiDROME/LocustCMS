@@ -1,14 +1,24 @@
 <?
 
-function makesafesqlstring(&$str){
+function makesafesqlstring (&$str) {
     global $mysql;
 
-    $str=@mysqli_real_escape_string($mysql,$str);
+    if (is_array($str)) {
+        array_walk($str, 'makesafesqlstring');
+    } else {
+        $str=@mysqli_real_escape_string($mysql, $str);
+    }
+
 }
 
-function makesafeformstring(&$str){
+function makesafeformstring (&$str) {
 
-    $str=htmlspecialchars(stripcslashes($str));
+    if (is_array($str)) {
+        array_walk($str, 'makesafeformstring');
+    } else {
+        $str=htmlspecialchars(stripcslashes($str));
+    }
+
 }
 
 function makevalidurl($to_url,$keepspaces=0){
@@ -171,4 +181,12 @@ function sitemap(){
     $sitemap[]="</urlset>";
 
     file_put_contents("../sitemap.xml",implode("\n",$sitemap));
+}
+
+//проверяем, есть ли доступ у пользователя админки к разделу
+function check_user_access($_indexes){
+    foreach ($_indexes as $index){
+        if(@in_array($index,$_SESSION["admin_auth_user"]["role"])!==false)return TRUE;
+    }
+    return false;
 }

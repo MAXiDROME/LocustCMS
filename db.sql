@@ -191,7 +191,9 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
 
 INSERT INTO `admin_users` (`id`, `login`, `password`, `role`) VALUES
   (1, 'admin', '1', '');
-
+ALTER TABLE `admin_users` ADD `name` VARCHAR(255) NOT NULL , ADD `comment` TEXT NOT NULL ;
+ALTER TABLE `admin_users` ADD `lastlogin` TIMESTAMP NOT NULL ;
+ALTER TABLE `admin_users` CHANGE `lastlogin` `lastlogin` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';
 --
 -- Индексы сохранённых таблиц
 --
