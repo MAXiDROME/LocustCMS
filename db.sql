@@ -181,6 +181,17 @@ CREATE TABLE IF NOT EXISTS `blocks` (
   `content` longtext NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE IF NOT EXISTS `admin_users` (
+  `id` int(11) NOT NULL,
+  `login` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` text NOT NULL
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+INSERT INTO `admin_users` (`id`, `login`, `password`, `role`) VALUES
+  (1, 'admin', '1', '');
+
 --
 -- Индексы сохранённых таблиц
 --
@@ -231,6 +242,9 @@ ALTER TABLE `users`
 ALTER TABLE `blocks`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `admin_users`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
@@ -274,8 +288,12 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `blocks`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+
+ALTER TABLE `admin_users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 
